@@ -1,0 +1,16 @@
+{
+  "customerId": "<REEMPLAZAR_CON_ID_REAL_DE_MONGODB>",
+  "estimatedDeliveryDate": "2026-10-09",
+  "remarks": "Pedido de demostracion, debe funcionar con datos reales de MongoDB",
+  "details": [
+    {
+      "productId": "<REEMPLAZAR_CON_ID_PRODUCTO_REAL>",
+      "quantity": 5,
+      "remark": "primera linea"
+    },
+    {
+      "productId": "<REEMPLAZAR_CON_OTRO_ID_PRODUCTO>",
+      "quantity": 3
+    }
+  ]
+}

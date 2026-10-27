@@ -1,0 +1,24 @@
+# ============================================================
+# Service — Exposición de puertos del backend en Kubernetes
+# ============================================================
+# Crear:    kubectl apply -f PierreConca-05-service.yml
+# Eliminar: kubectl delete -f PierreConca-05-service.yml
+# Verificar: kubectl get services -n pierreconca-05-namespace
+#
+# NodePort válido: 30000-32767
+# targetPort debe coincidir con SERVER_PORT del contenedor (8081)
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pierreconca-05-service
+  namespace: pierreconca-05-namespace
+spec:
+  type: NodePort        # Cambia a LoadBalancer si estás en un entorno cloud (AWS, GCP, Azure)
+  ports:
+    - port: 30005       # Puerto que el Service expondrá internamente
+      targetPort: 8081  # Puerto donde la app Spring WebFlux escucha dentro del contenedor
+      nodePort: 30005   # Puerto accesible desde fuera del cluster (nodo)
+  selector:
+    app: pierreconca-05-deployment  # Debe coincidir con las etiquetas del Deployment

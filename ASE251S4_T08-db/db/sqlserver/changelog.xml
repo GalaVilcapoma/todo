@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  changelog.xml — Maestro de Liquibase para SQL Server
+  Proyecto: AVSA Cañete — Equipo 08 (ASE251S4_T08-db)
+
+  Este archivo declara el ORDEN en que Liquibase debe aplicar
+  los changesets. Cada includes apunta a un archivo de la
+  carpeta changes/. La ruta forma parte de la identidad del
+  changeset, por eso los archivos ya publicados no se renombran.
+
+  Motor: SQL Server 2022
+  Base de datos destino: avsa_db
+  ============================================================
+-->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.33.xsd">
+
+    <include file="changes/V001__baseline.sql" relativeToChangelogFile="true"/>
+    <include file="changes/V002__add_audit_indexes.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

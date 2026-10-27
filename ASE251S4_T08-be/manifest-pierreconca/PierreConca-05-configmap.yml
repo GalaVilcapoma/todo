@@ -1,0 +1,47 @@
+# ============================================================
+# ConfigMap — Configuración NO sensible en Kubernetes
+# ============================================================
+# Diferencia con Secret:
+#   - ConfigMap  → valores en texto plano  (configuración pública)
+#   - Secret     → valores en Base64       (credenciales privadas)
+#
+# Crear:    kubectl apply -f PierreConca-05-configmap.yml
+# Eliminar: kubectl delete -f PierreConca-05-configmap.yml
+# Verificar: kubectl get configmaps -n pierreconca-05-namespace
+# Ver datos: kubectl describe configmap pierreconca-05-configmap -n pierreconca-05-namespace
+#
+# ── Cómo usarlo en el Deployment ────────────────────────────
+# En el deployment.yml, dentro de containers, agrega:
+#   envFrom:
+#     - configMapRef:
+#         name: pierreconca-05-configmap
+#
+# O para una sola variable:
+#   env:
+#     - name: SERVER_PORT
+#       valueFrom:
+#         configMapKeyRef:
+#           name: pierreconca-05-configmap
+#           key: SERVER_PORT
+# ============================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pierreconca-05-configmap
+  namespace: pierreconca-05-namespace
+data:
+  # Puerto del servidor Spring WebFlux
+  SERVER_PORT: "8081"
+
+  # Base de datos MongoDB Atlas (nombre, no credenciales — esas van en el Secret)
+  MONGODB_DATABASE: "db_avsa"
+
+  # URI de conexión MongoDB Atlas (versión con placeholders — usar Secret para producción)
+  MONGODB_URI: "mongodb+srv://pierreconca_db_user:<password>@cluster0.kt6pnki.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+  # Nombre de la aplicación
+  APP_NAME: "spring-webflux-nosql"
+
+  # Entorno de ejecución
+  APP_ENV: "kubernetes"

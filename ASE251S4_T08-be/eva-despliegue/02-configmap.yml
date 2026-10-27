@@ -1,0 +1,12 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: avsa-backend-configmap
+  namespace: alexandraquispe-19
+  labels:
+    app: avsa-backend-19
+data:
+  SERVER_PORT: "8081"
+  SPRING_APPLICATION_NAME: "spring-webflux-nosql"
+  R2DBC_URL: "r2dbc:mssql://avsa-alexandra-sqlserver-rds:1433/avsa_db?trustServerCertificate=true"
+  R2DBC_USERNAME: "sa"

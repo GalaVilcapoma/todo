@@ -1,0 +1,154 @@
+{
+  "info": {
+    "name": "Agrochemicals WebFlux API - ASE251S4_T08",
+    "description": "CRUD Maestro Agroquímicos - Spring WebFlux + MongoDB Reactive",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1️⃣ Listar Todos (FLUX)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals"]
+        },
+        "description": "✅ Retorna todos los agroquímicos (activos e inactivos) usando Flux"
+      }
+    },
+    {
+      "name": "2️⃣ Listar Activos (FLUX)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/active",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "active"]
+        },
+        "description": "✅ Retorna solo agroquímicos activos usando Flux"
+      }
+    },
+    {
+      "name": "3️⃣ Listar Inactivos (FLUX)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/inactive",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "inactive"]
+        },
+        "description": "✅ Retorna solo agroquímicos inactivos usando Flux"
+      }
+    },
+    {
+      "name": "4️⃣ Buscar por ID (MONO)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/{{agrochemical_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "{{agrochemical_id}}"]
+        },
+        "description": "✅ Busca un agroquímico por ID usando Mono. Reemplaza {{agrochemical_id}} con un ID real de MongoDB."
+      }
+    },
+    {
+      "name": "5️⃣ Crear (MONO)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"commercialName\": \"Roundup Max\",\n  \"activeIngredient\": \"Glifosato 74.7%\",\n  \"category\": \"HERBICIDE\",\n  \"senasaRegistrationNumber\": \"SEN-2024-001\",\n  \"registrationExpiry\": \"2026-12-31\",\n  \"maxDose\": 2.5,\n  \"waitingPeriodDays\": 15,\n  \"manufacturer\": \"Bayer CropScience\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals"]
+        },
+        "description": "✅ Crea un nuevo agroquímico usando Mono"
+      }
+    },
+    {
+      "name": "6️⃣ Actualizar (MONO)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"commercialName\": \"Roundup Max Updated\",\n  \"activeIngredient\": \"Glifosato 80%\",\n  \"category\": \"HERBICIDE\",\n  \"senasaRegistrationNumber\": \"SEN-2024-001\",\n  \"registrationExpiry\": \"2027-12-31\",\n  \"maxDose\": 3.0,\n  \"waitingPeriodDays\": 20,\n  \"manufacturer\": \"Bayer\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/{{agrochemical_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "{{agrochemical_id}}"]
+        },
+        "description": "✅ Actualiza un agroquímico existente usando Mono. Reemplaza {{agrochemical_id}} con un ID real."
+      }
+    },
+    {
+      "name": "7️⃣ Eliminar Lógico (MONO)",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/{{agrochemical_id}}/delete",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "{{agrochemical_id}}", "delete"]
+        },
+        "description": "✅ Desactiva un agroquímico (eliminación lógica) usando Mono. Reemplaza {{agrochemical_id}} con un ID real."
+      }
+    },
+    {
+      "name": "8️⃣ Restaurar (MONO)",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/v1/api/agrochemicals/{{agrochemical_id}}/restore",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["v1", "api", "agrochemicals", "{{agrochemical_id}}", "restore"]
+        },
+        "description": "✅ Restaura un agroquímico previamente desactivado usando Mono. Reemplaza {{agrochemical_id}} con un ID real."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "agrochemical_id",
+      "value": "REEMPLAZAR_CON_ID_REAL",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "b1a2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Productos WebFlux API - Anthony Gala",
+		"description": "Colección de pruebas reactivas para el Microservicio Producto (Spring WebFlux + MongoDB Atlas)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Listar Todos (Flux)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/productos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Listar Activos (Flux)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/productos/estado/true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos",
+						"estado",
+						"true"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Buscar por ID (Mono)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/productos/COLOCAR_ID_AQUI",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos",
+						"COLOCAR_ID_AQUI"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Crear Producto (Mono)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"PROD-2026\",\n  \"name\": \"Fertilizante Bio-Power X\",\n  \"description\": \"Fertilizante foliar orgánico concentrado\",\n  \"category\": \"Fertilizantes\",\n  \"unitMeasure\": \"Litros\",\n  \"unitPrice\": 95.00,\n  \"currentStock\": 150,\n  \"minimumStock\": 20,\n  \"origin\": \"Nacional\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/productos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Actualizar Producto (Mono)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"PROD-2026\",\n  \"name\": \"Fertilizante Bio-Power X (Ultra Premium)\",\n  \"description\": \"Fertilizante foliar orgánico superconcentrado\",\n  \"category\": \"Fertilizantes\",\n  \"unitMeasure\": \"Litros\",\n  \"unitPrice\": 105.00,\n  \"currentStock\": 200,\n  \"minimumStock\": 25,\n  \"origin\": \"Nacional\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/productos/COLOCAR_ID_AQUI",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos",
+						"COLOCAR_ID_AQUI"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Eliminar Lógico (Patch)",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/productos/COLOCAR_ID_AQUI/eliminar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos",
+						"COLOCAR_ID_AQUI",
+						"eliminar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Restaurar Lógico (Patch)",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/productos/COLOCAR_ID_AQUI/restaurar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"productos",
+						"COLOCAR_ID_AQUI",
+						"restaurar"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

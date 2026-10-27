@@ -1,0 +1,90 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
+logging:
+  level:
+    io.r2dbc: DEBUG
+    org.springframework.data.r2dbc: DEBUG
+    org.springframework.r2dbc: DEBUG
+
+spring:
+  application:
+    name: spring-webflux-nosql
+
+  # ── Carga de archivos (importación Excel/CSV) ─────────────────────────────
+  # Sin esto, WebFlux solo bufferea 256KB por parte y rechaza archivos grandes.
+  codec:
+    max-in-memory-size: 10MB
+  webflux:
+    multipart:
+      max-in-memory-size: 10MB
+      max-disk-usage-per-part: 50MB
+      max-parts: 4
+
+  # ── Serialización JSON ────────────────────────────────────────────────────
+  # Sin esto, Jackson serializa LocalDate/LocalDateTime como arrays numéricos
+  # [2026,10,1] en lugar de strings "2026-10-01". El frontend espera strings.
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+  # ── SQL Server / PostgreSQL (R2DBC reactivo — transaccionales) ────────────
+  r2dbc:
+    # URL activa (SQL Server Docker)
+    url: ${R2DBC_URL:r2dbc:mssql://localhost:1433/avsa_db?trustServerCertificate=true}
+    username: ${R2DBC_USERNAME:sa}
+    # ⚠️ Las credenciales reales van en .env (nunca versionadas)
+    password: ${R2DBC_PASSWORD:}
+
+    # URL PostgreSQL RDS (comentada)
+    # url: ${R2DBC_URL:r2dbc:postgresql://<host>.rds.amazonaws.com:5432/avsa_db?sslMode=require}
+    # username: ${R2DBC_USERNAME:<usuario>}
+    # password: ${R2DBC_PASSWORD:}
+
+    pool:
+      enabled: true
+      initial-size: 2
+      max-size: 10
+      max-idle-time: 30m
+      max-life-time: 60m
+      validation-query: "SELECT 1"
+
+  # ── MongoDB (maestros: customers, products, agrochemicals) ───────────────
+  data:
+    mongodb:
+      # Base de datos única (una sola BD con sus 3 colecciones).
+      # ⚠️ La URI real va en .env (nunca versionada).
+      uri: ${MONGODB_URI:mongodb+srv://<usuario>:<clave>@<cluster>.mongodb.net/db_avsa?retryWrites=true&w=majority}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  webjars:
+    prefix: ""
+
+# Configuración de Actuator para health checks en Kubernetes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true

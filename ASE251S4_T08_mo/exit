@@ -1,0 +1,20 @@
+* [33mf647a17[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m fix(mo):Compatibility issues were resolved.
+* [33m7ad87ff[m feat(dashboar):The functional transactional data for each master record were added.
+[31m|[m *   [33m1c5477e[m[33m ([m[1;31morigin/develop[m[33m)[m feat(dashboard): The functional transactional data for each master record were added.
+[31m|[m [32m|[m[31m\[m  
+[31m|[m [32m|[m[31m/[m  
+[31m|[m[31m/[m[32m|[m   
+* [32m|[m [33m66ec162[m fix(mo):Update mobile validations and config
+* [32m|[m [33m7e8b3b2[m feat(shared): update Button component color for mobile view
+[33m|[m * [33mb4b7429[m feat(dashboar):The functional transactional data for each master record were added.
+[33m|[m[33m/[m  
+* [33m4921c8c[m refactor(movil):Page restructuring
+* [33m0bfccf1[m refactor(mobile):Mobile device connected to the backend
+* [33mce2b618[m docs: documentar la app movil, sus modulos y como levantarla
+* [33m1c33da2[m feat: pantallas de los siete modulos mas la pantalla de mas
+* [33m947d3ac[m fix: no expulsar al usuario al restaurar la sesion
+* [33m1327113[m feat: capa de datos de la app contra la API del backend
+* [33m3c33be0[m chore: preparar el proyecto base de la app movil
+* [33m9cef210[m Add all project files to develop
+[33m|[m * [33m7c0274b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Dejar solo README.md en main
+[33m|[m[33m/[m  

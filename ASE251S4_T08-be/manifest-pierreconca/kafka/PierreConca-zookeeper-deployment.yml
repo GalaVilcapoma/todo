@@ -1,0 +1,65 @@
+# ============================================================
+# Deployment — Zookeeper (coordinador de Kafka)
+# ============================================================
+# Zookeeper DEBE estar corriendo ANTES de iniciar Kafka.
+# Imagen: confluentinc/cp-zookeeper (Confluent Community - libre)
+#
+# Aplicar:   kubectl apply -f PierreConca-zookeeper-deployment.yml
+# Pods:      kubectl get pods -n pierreconca-kafka-namespace
+# Logs:      kubectl logs -f -l app=pierreconca-zookeeper -n pierreconca-kafka-namespace
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pierreconca-zookeeper-deployment
+  namespace: pierreconca-kafka-namespace
+  labels:
+    app: pierreconca-zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pierreconca-zookeeper
+  template:
+    metadata:
+      labels:
+        app: pierreconca-zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:7.5.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 2181
+              name: client
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pierreconca-kafka-configmap
+                  key: ZOOKEEPER_CLIENT_PORT
+            - name: ZOOKEEPER_TICK_TIME
+              valueFrom:
+                configMapKeyRef:
+                  name: pierreconca-kafka-configmap
+                  key: ZOOKEEPER_TICK_TIME
+          livenessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "300m"

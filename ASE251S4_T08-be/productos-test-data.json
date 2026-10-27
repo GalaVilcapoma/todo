@@ -1,0 +1,35 @@
+[
+  {
+    "code": "PROD-101",
+    "name": "Insec-Max Pro",
+    "description": "Insecticida concentrado emulsionable para control de plagas",
+    "category": "Insecticidas",
+    "unitMeasure": "Litros",
+    "unitPrice": 65.50,
+    "currentStock": 120,
+    "minimumStock": 15,
+    "origin": "Importado"
+  },
+  {
+    "code": "PROD-102",
+    "name": "Bio-K-Soil",
+    "description": "Acondicionador de suelo rico en potasio asimilable",
+    "category": "Fertilizantes",
+    "unitMeasure": "Sacos (25kg)",
+    "unitPrice": 110.00,
+    "currentStock": 80,
+    "minimumStock": 10,
+    "origin": "Nacional"
+  },
+  {
+    "code": "PROD-103",
+    "name": "Herbi-Clean Super",
+    "description": "Herbicida no selectivo de acción rápida",
+    "category": "Herbicidas",
+    "unitMeasure": "Litros",
+    "unitPrice": 85.00,
+    "currentStock": 45,
+    "minimumStock": 8,
+    "origin": "Importado"
+  }
+]

@@ -1,0 +1,11 @@
+# ============================================================
+# Namespace — Espacio de trabajo de Pierre Conca en Kubernetes
+# ============================================================
+# Crear:   kubectl apply -f PierreConca-05-namespace.yml
+# Eliminar: kubectl delete -f PierreConca-05-namespace.yml
+# Listar:  kubectl get namespaces
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pierreconca-05-namespace

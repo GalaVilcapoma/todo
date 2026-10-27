@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  V001__baseline.xml â€” Baseline de db_avsa en formato Liquibase
+  Proyecto: AVSA CaÃ±ete â€” Equipo 08
+  Motor: MongoDB 7
+
+  TraducciÃ³n de mongodb/bootstrap/V001__baseline.js a changesets
+  de la extensiÃ³n liquibase-mongodb.
+
+  Idempotencia:
+    - createCollection usa <preConditions onFail="MARK_RAN"> para
+      marcar como aplicado si la colecciÃ³n ya existe.
+    - Los seed usan expectedDocumentCount=0 para no duplicar datos.
+  Liquibase registra cada changeset en la colecciÃ³n DATABASECHANGELOG.
+
+  La colecciÃ³n de control propia (schema_changes) NO se migra:
+  Liquibase la reemplaza por DATABASECHANGELOG.
+  ============================================================
+-->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.33.xsd
+                        http://www.liquibase.org/xml/ns/mongodb
+                        https://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <!-- ============================================================
+         COLECCIONES CON VALIDADORES
+         ============================================================ -->
+
+    <changeSet id="V001-01" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="customer"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n customer con validador JSON Schema.</comment>
+        <mongodb:createCollection collectionName="customer">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["codigo", "razonSocial", "pais", "tipoCliente"],
+                    "properties": {
+                        "codigo":      {"bsonType": "string", "description": "CÃ³digo Ãºnico del cliente"},
+                        "razonSocial": {"bsonType": "string", "description": "RazÃ³n social o nombre completo"},
+                        "pais":        {"bsonType": "string", "description": "PaÃ­s de origen del cliente"},
+                        "tipoCliente": {"bsonType": "string", "enum": ["NACIONAL", "INTERNACIONAL"]},
+                        "active":      {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="customer"/></rollback>
+    </changeSet>
+
+    <changeSet id="V001-02" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="productos"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n productos con validador JSON Schema.</comment>
+        <mongodb:createCollection collectionName="productos">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["codigo", "nombre", "categoria", "precioUnitario"],
+                    "properties": {
+                        "codigo":         {"bsonType": "string"},
+                        "nombre":         {"bsonType": "string"},
+                        "categoria":      {"bsonType": "string"},
+                        "precioUnitario": {"bsonType": ["decimal", "double", "int"]},
+                        "stockActual":    {"bsonType": "int", "minimum": 0},
+                        "estado":         {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="productos"/></rollback>
+    </changeSet>
+
+    <changeSet id="V001-03" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="agrochemicals"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n agrochemicals con validador JSON Schema.</comment>
+        <mongodb:createCollection collectionName="agrochemicals">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["commercialName", "activeIngredient", "category"],
+                    "properties": {
+                        "commercialName":   {"bsonType": "string"},
+                        "activeIngredient": {"bsonType": "string"},
+                        "category": {
+                            "bsonType": "string",
+                            "enum": ["INSECTICIDE", "FUNGICIDE", "HERBICIDE", "FERTILIZER", "BIOSTIMULANT", "OTHER"]
+                        },
+                        "active": {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="agrochemicals"/></rollback>
+    </changeSet>
+
+    <changeSet id="V001-04" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="notificaciones"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n notificaciones (sin validador).</comment>
+        <mongodb:createCollection collectionName="notificaciones"/>
+        <rollback><mongodb:dropCollection collectionName="notificaciones"/></rollback>
+    </changeSet>
+
+    <changeSet id="V001-05" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="dashboard_metrics"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n dashboard_metrics (sin validador).</comment>
+        <mongodb:createCollection collectionName="dashboard_metrics"/>
+        <rollback><mongodb:dropCollection collectionName="dashboard_metrics"/></rollback>
+    </changeSet>
+
+    <changeSet id="V001-06" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="audit_logs"/></not>
+        </preConditions>
+        <comment>Crear la colecciÃ³n audit_logs (sin validador).</comment>
+        <mongodb:createCollection collectionName="audit_logs"/>
+        <rollback><mongodb:dropCollection collectionName="audit_logs"/></rollback>
+    </changeSet>
+
+    <!-- ============================================================
+         ÃNDICES
+         ============================================================ -->
+
+    <changeSet id="V001-07" author="avsa-t08">
+        <comment>Ãndices de la colecciÃ³n customer.</comment>
+        <mongodb:createIndex collectionName="customer">
+            <mongodb:keys>{"codigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_customer_codigo", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="customer">
+            <mongodb:keys>{"state": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_customer_state"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="customer">
+            <mongodb:keys>{"tipoCliente": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_customer_tipo"}</mongodb:options>
+        </mongodb:createIndex>
+        <rollback>
+            <mongodb:dropIndex collectionName="customer"><mongodb:keys>{"codigo": 1}</mongodb:keys></mongodb:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-08" author="avsa-t08">
+        <comment>Ãndices de la colecciÃ³n productos.</comment>
+        <mongodb:createIndex collectionName="productos">
+            <mongodb:keys>{"codigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_productos_codigo", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="productos">
+            <mongodb:keys>{"estado": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_productos_estado"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="productos">
+            <mongodb:keys>{"categoria": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_productos_categoria"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="productos">
+            <mongodb:keys>{"stockActual": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_productos_stock"}</mongodb:options>
+        </mongodb:createIndex>
+        <rollback>
+            <mongodb:dropIndex collectionName="productos"><mongodb:keys>{"codigo": 1}</mongodb:keys></mongodb:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-09" author="avsa-t08">
+        <comment>Ãndices de la colecciÃ³n agrochemicals.</comment>
+        <mongodb:createIndex collectionName="agrochemicals">
+            <mongodb:keys>{"active": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_agro_active"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="agrochemicals">
+            <mongodb:keys>{"category": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_agro_category"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="agrochemicals">
+            <mongodb:keys>{"manufacturer": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_agro_manufacturer"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="agrochemicals">
+            <mongodb:keys>{"registrationExpiry": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_agro_expiry"}</mongodb:options>
+        </mongodb:createIndex>
+        <rollback>
+            <mongodb:dropIndex collectionName="agrochemicals"><mongodb:keys>{"active": 1}</mongodb:keys></mongodb:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-10" author="avsa-t08">
+        <comment>Ãndices de notificaciones, audit_logs y dashboard_metrics.</comment>
+        <mongodb:createIndex collectionName="notificaciones">
+            <mongodb:keys>{"usuario": 1, "estado": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_notif_usuario_estado"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="notificaciones">
+            <mongodb:keys>{"fechaHora": -1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_notif_fecha"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="audit_logs">
+            <mongodb:keys>{"userName": 1, "timestamp": -1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_audit_user_ts"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="audit_logs">
+            <mongodb:keys>{"modulo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_audit_modulo"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="dashboard_metrics">
+            <mongodb:keys>{"generadoEn": -1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_dashboard_fecha"}</mongodb:options>
+        </mongodb:createIndex>
+        <rollback>
+            <mongodb:dropIndex collectionName="notificaciones"><mongodb:keys>{"usuario": 1, "estado": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="notificaciones"><mongodb:keys>{"fechaHora": -1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="audit_logs"><mongodb:keys>{"userName": 1, "timestamp": -1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="audit_logs"><mongodb:keys>{"modulo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="dashboard_metrics"><mongodb:keys>{"generadoEn": -1}</mongodb:keys></mongodb:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <!-- ============================================================
+         DATOS SEMILLA
+         ============================================================ -->
+
+    <changeSet id="V001-11" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="customer" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de customer â€” 15 documentos (nacionales e internacionales).</comment>
+        <mongodb:insertMany collectionName="customer">
+            <mongodb:documents><![CDATA[
+[
+{"codigo":"CLI-001","razonSocial":"Agroindustrias del Sur S.A.C.","ruc":"20512345678","tipoDocumento":"RUC","numeroDocumento":"20512345678","pais":"PerÃº","ciudad":"Lima","direccion":"Av. La Marina 1234","telefono":"01-4567890","email":"ventas@agroindsur.pe","contactoPrincipal":"Luis Paredes","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-002","razonSocial":"Fresh Fruits Export Ltd.","tipoDocumento":"TAX_ID","numeroDocumento":"US-987654321","pais":"Estados Unidos","ciudad":"Miami","direccion":"1200 Brickell Ave","telefono":"+1-305-1234567","email":"imports@freshfruits.com","contactoPrincipal":"John Smith","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-003","razonSocial":"Supermercados Peruanos S.A.","ruc":"20101234567","tipoDocumento":"RUC","numeroDocumento":"20101234567","pais":"PerÃº","ciudad":"Lima","direccion":"Calle Morelli 181 San Borja","telefono":"01-6180000","email":"compras@spsa.pe","contactoPrincipal":"Martha GutiÃ©rrez","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-004","razonSocial":"European Organic Traders GmbH","tipoDocumento":"TAX_ID","numeroDocumento":"DE-123456789","pais":"Alemania","ciudad":"Hamburgo","direccion":"HafenstraÃŸe 45","telefono":"+49-40-12345","email":"procurement@eot.de","contactoPrincipal":"Hans Mueller","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-005","razonSocial":"Mercado Mayorista CaÃ±ete E.I.R.L.","ruc":"20567890123","tipoDocumento":"RUC","numeroDocumento":"20567890123","pais":"PerÃº","ciudad":"CaÃ±ete","direccion":"Jr. Bolognesi 456","telefono":"01-5812345","email":"info@mercadocanete.pe","contactoPrincipal":"Rosa Mendoza","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-006","razonSocial":"Frutas Andinas Importadora Ltda.","tipoDocumento":"RUT","numeroDocumento":"CL-76543210","pais":"Chile","ciudad":"Santiago","direccion":"Av. Providencia 2350","telefono":"+56-2-23456789","email":"compras@frutasandinas.cl","contactoPrincipal":"Valentina Rojas","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-007","razonSocial":"Grupo Hotelero Costa Verde S.A.","ruc":"20334455667","tipoDocumento":"RUC","numeroDocumento":"20334455667","pais":"PerÃº","ciudad":"Lima","direccion":"MalecÃ³n de la Reserva 610 Miraflores","telefono":"01-6108000","email":"abastecimiento@costaverde.pe","contactoPrincipal":"Jorge Villanueva","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-008","razonSocial":"Pacific Organic Distribution Inc.","tipoDocumento":"TAX_ID","numeroDocumento":"CA-556677889","pais":"CanadÃ¡","ciudad":"Vancouver","direccion":"789 Pacific Blvd","telefono":"+1-604-9876543","email":"orders@pacificorganic.ca","contactoPrincipal":"Emily Zhang","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-009","razonSocial":"Cooperativa Agraria Valle CaÃ±ete","ruc":"20123456780","tipoDocumento":"RUC","numeroDocumento":"20123456780","pais":"PerÃº","ciudad":"CaÃ±ete","direccion":"Panamericana Sur Km 146","telefono":"01-5814400","email":"gerencia@coopvallecanete.pe","contactoPrincipal":"FÃ©lix Quispe Mamani","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-010","razonSocial":"Importaciones IbÃ©ricas S.L.","tipoDocumento":"NIF","numeroDocumento":"ES-B12345678","pais":"EspaÃ±a","ciudad":"Madrid","direccion":"Calle Serrano 55","telefono":"+34-91-1234567","email":"importaciones@ibericas.es","contactoPrincipal":"Carlos FernÃ¡ndez","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-011","razonSocial":"Procesadora de Jugos Naturales del PerÃº S.A.C.","ruc":"20456789012","tipoDocumento":"RUC","numeroDocumento":"20456789012","pais":"PerÃº","ciudad":"Lima","direccion":"Av. Naranjal 1560 Independencia","telefono":"01-5312200","email":"logistica@jugosnaturales.pe","contactoPrincipal":"Natalia Espinoza","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-012","razonSocial":"Nippon Fresh Foods Co. Ltd.","tipoDocumento":"TAX_ID","numeroDocumento":"JP-1234567890","pais":"JapÃ³n","ciudad":"Tokio","direccion":"2-1 Tsukiji Chuo-ku","telefono":"+81-3-55551234","email":"import@nipponfresh.co.jp","contactoPrincipal":"Hiroshi Tanaka","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-013","razonSocial":"Restaurante Central Andino E.I.R.L.","ruc":"20234567891","tipoDocumento":"RUC","numeroDocumento":"20234567891","pais":"PerÃº","ciudad":"Lima","direccion":"Av. Pedro de Osma 301 Barranco","telefono":"01-4418978","email":"compras@centralandino.pe","contactoPrincipal":"SofÃ­a Alvarado","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-014","razonSocial":"Dutch Agri Trade B.V.","tipoDocumento":"TAX_ID","numeroDocumento":"NL-987654321B01","pais":"PaÃ­ses Bajos","ciudad":"Rotterdam","direccion":"Waalhaven Z.Z. 15","telefono":"+31-10-4123456","email":"trading@dutchagri.nl","contactoPrincipal":"Pieter van Dijk","tipoCliente":"INTERNACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-015","razonSocial":"Distribuidora Sur Andino S.R.L.","ruc":"20678901234","tipoDocumento":"RUC","numeroDocumento":"20678901234","pais":"PerÃº","ciudad":"Arequipa","direccion":"Av. Ejercito 205","telefono":"054-234567","email":"ventas@surandino.pe","contactoPrincipal":"Miguel CÃ¡ceres Vargas","tipoCliente":"NACIONAL","state":"A","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "customer", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-12" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="productos" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de productos â€” 15 documentos (catÃ¡logo agrÃ­cola de CaÃ±ete).</comment>
+        <mongodb:insertMany collectionName="productos">
+            <mongodb:documents><![CDATA[
+[
+{"codigo":"PROD-001","nombre":"Mandarina Satsuma","descripcion":"Mandarina variedad Satsuma de primera calidad, sin semillas","categoria":"CÃ­tricos","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"85.00"},"stockActual":500,"stockMinimo":50,"origen":"CaÃ±ete - San Vicente","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-002","nombre":"Palta Hass","descripcion":"Palta Hass calibre 16-20, lista para exportaciÃ³n","categoria":"Frutas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"120.00"},"stockActual":350,"stockMinimo":40,"origen":"CaÃ±ete - LunahuanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-003","nombre":"Uva Red Globe","descripcion":"Uva de mesa variedad Red Globe, racimos uniformes","categoria":"Frutas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"95.00"},"stockActual":280,"stockMinimo":30,"origen":"CaÃ±ete - Imperial","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-004","nombre":"EspÃ¡rrago Verde","descripcion":"EspÃ¡rrago verde fresco calibre jumbo para exportaciÃ³n","categoria":"Hortalizas","unidadMedida":"Kg","precioUnitario":{"$numberDecimal":"18.50"},"stockActual":1200,"stockMinimo":100,"origen":"CaÃ±ete - QuilmanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-005","nombre":"Mango Kent","descripcion":"Mango variedad Kent calibre 8-10, pulpa firme","categoria":"Frutas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"110.00"},"stockActual":420,"stockMinimo":50,"origen":"CaÃ±ete - San Vicente","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-006","nombre":"Uva Thompson Seedless","descripcion":"Uva blanca sin semillas, calibre 16-17 mm","categoria":"Frutas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"88.00"},"stockActual":190,"stockMinimo":25,"origen":"CaÃ±ete - Imperial","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-007","nombre":"LimÃ³n Sutil","descripcion":"LimÃ³n sutil fresco, tamaÃ±o mediano, alta acidez","categoria":"CÃ­tricos","unidadMedida":"Saco","precioUnitario":{"$numberDecimal":"45.00"},"stockActual":600,"stockMinimo":80,"origen":"CaÃ±ete - San Vicente","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-008","nombre":"Camote Morado","descripcion":"Camote morado orgÃ¡nico, alto contenido de antocianinas","categoria":"TubÃ©rculos","unidadMedida":"Saco","precioUnitario":{"$numberDecimal":"38.00"},"stockActual":800,"stockMinimo":60,"origen":"CaÃ±ete - Mala","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-009","nombre":"Granada Wonderful","descripcion":"Granada variedad Wonderful, alta concentraciÃ³n de jugo","categoria":"Frutas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"135.00"},"stockActual":150,"stockMinimo":20,"origen":"CaÃ±ete - LunahuanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-010","nombre":"MaÃ­z Morado","descripcion":"MaÃ­z morado seco, variedad Carazas, usado para chicha y colorante","categoria":"Granos","unidadMedida":"Saco","precioUnitario":{"$numberDecimal":"55.00"},"stockActual":950,"stockMinimo":100,"origen":"CaÃ±ete - QuilmanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-011","nombre":"Pacay","descripcion":"Pacay fresco vainas grandes, pulpa dulce y esponjosa","categoria":"Frutas","unidadMedida":"Kg","precioUnitario":{"$numberDecimal":"12.00"},"stockActual":300,"stockMinimo":30,"origen":"CaÃ±ete - San Vicente","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-012","nombre":"AjÃ­ Amarillo","descripcion":"AjÃ­ amarillo fresco, calibre export, color uniforme","categoria":"Hortalizas","unidadMedida":"Caja","precioUnitario":{"$numberDecimal":"62.00"},"stockActual":220,"stockMinimo":25,"origen":"CaÃ±ete - Mala","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-013","nombre":"Choclo Blanco Gigante","descripcion":"Choclo blanco tierno variedad Cusco, grano grande y dulce","categoria":"Granos","unidadMedida":"Saco","precioUnitario":{"$numberDecimal":"48.00"},"stockActual":400,"stockMinimo":40,"origen":"CaÃ±ete - LunahuanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-014","nombre":"SandÃ­a Crimson Sweet","descripcion":"SandÃ­a sin semillas variedad Crimson Sweet, pulpa roja firme","categoria":"Frutas","unidadMedida":"Unidad","precioUnitario":{"$numberDecimal":"22.00"},"stockActual":350,"stockMinimo":30,"origen":"CaÃ±ete - San Vicente","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PROD-015","nombre":"Aceituna Botija","descripcion":"Aceituna botija negra curada en sal, calibre extra","categoria":"Otros","unidadMedida":"Balde","precioUnitario":{"$numberDecimal":"75.00"},"stockActual":180,"stockMinimo":20,"origen":"CaÃ±ete - QuilmanÃ¡","estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "productos", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-13" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="agrochemicals" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de agrochemicals â€” 15 documentos (todas las categorÃ­as SENASA).</comment>
+        <mongodb:insertMany collectionName="agrochemicals">
+            <mongodb:documents><![CDATA[
+[
+{"commercialName":"Roundup Max","activeIngredient":"Glifosato 74.7%","category":"HERBICIDE","senasaRegistrationNumber":"SEN-2024-001","registrationExpiry":{"$date":"2026-12-31T00:00:00Z"},"maxDose":{"$numberDecimal":"2.5"},"waitingPeriodDays":15,"manufacturer":"Bayer CropScience","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Karate Zeon","activeIngredient":"Lambda-Cialotrina 5%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-002","registrationExpiry":{"$date":"2027-06-30T00:00:00Z"},"maxDose":{"$numberDecimal":"1.5"},"waitingPeriodDays":21,"manufacturer":"Syngenta","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Score 250 EC","activeIngredient":"Difenoconazol 25%","category":"FUNGICIDE","senasaRegistrationNumber":"SEN-2024-003","registrationExpiry":{"$date":"2026-09-15T00:00:00Z"},"maxDose":{"$numberDecimal":"0.5"},"waitingPeriodDays":14,"manufacturer":"Syngenta","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Bayfolan Forte","activeIngredient":"NPK + Microelementos","category":"FERTILIZER","senasaRegistrationNumber":"SEN-2024-004","registrationExpiry":{"$date":"2027-05-01T00:00:00Z"},"maxDose":{"$numberDecimal":"5.0"},"waitingPeriodDays":0,"manufacturer":"Bayer CropScience","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Trichoderma Harzianum","activeIngredient":"Trichoderma harzianum","category":"BIOSTIMULANT","senasaRegistrationNumber":"SEN-2024-005","registrationExpiry":{"$date":"2029-01-15T00:00:00Z"},"maxDose":{"$numberDecimal":"2.0"},"waitingPeriodDays":0,"manufacturer":"BioAgro Peru","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Confidor 350 SC","activeIngredient":"Imidacloprid 35%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-006","registrationExpiry":{"$date":"2027-03-20T00:00:00Z"},"maxDose":{"$numberDecimal":"0.8"},"waitingPeriodDays":14,"manufacturer":"Bayer CropScience","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Amistar Top","activeIngredient":"Azoxystrobin 20% + Difenoconazol 12.5%","category":"FUNGICIDE","senasaRegistrationNumber":"SEN-2024-007","registrationExpiry":{"$date":"2028-02-28T00:00:00Z"},"maxDose":{"$numberDecimal":"1.0"},"waitingPeriodDays":21,"manufacturer":"Syngenta","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Fusilade Forte","activeIngredient":"Fluazifop-p-butil 12.5%","category":"HERBICIDE","senasaRegistrationNumber":"SEN-2024-008","registrationExpiry":{"$date":"2026-08-10T00:00:00Z"},"maxDose":{"$numberDecimal":"1.5"},"waitingPeriodDays":30,"manufacturer":"Syngenta","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Wuxal Calcio-Boro","activeIngredient":"Calcio 7% + Boro 0.5%","category":"FERTILIZER","senasaRegistrationNumber":"SEN-2024-009","registrationExpiry":{"$date":"2028-11-30T00:00:00Z"},"maxDose":{"$numberDecimal":"3.0"},"waitingPeriodDays":0,"manufacturer":"COMPO Expert","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Dipel DF","activeIngredient":"Bacillus thuringiensis var. kurstaki 54%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-010","registrationExpiry":{"$date":"2027-09-12T00:00:00Z"},"maxDose":{"$numberDecimal":"1.0"},"waitingPeriodDays":0,"manufacturer":"Sumitomo Chemical","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Kocide 2000","activeIngredient":"HidrÃ³xido de cobre 53.8%","category":"FUNGICIDE","senasaRegistrationNumber":"SEN-2024-011","registrationExpiry":{"$date":"2026-06-30T00:00:00Z"},"maxDose":{"$numberDecimal":"2.0"},"waitingPeriodDays":7,"manufacturer":"FMC Corporation","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Progibb 40 SG","activeIngredient":"Ãcido GiberÃ©lico 40%","category":"BIOSTIMULANT","senasaRegistrationNumber":"SEN-2024-012","registrationExpiry":{"$date":"2028-04-15T00:00:00Z"},"maxDose":{"$numberDecimal":"0.02"},"waitingPeriodDays":0,"manufacturer":"Valent BioSciences","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Stomp Aqua","activeIngredient":"Pendimetalina 45.5%","category":"HERBICIDE","senasaRegistrationNumber":"SEN-2024-013","registrationExpiry":{"$date":"2027-01-20T00:00:00Z"},"maxDose":{"$numberDecimal":"3.5"},"waitingPeriodDays":45,"manufacturer":"BASF","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Vertimec 1.8 EC","activeIngredient":"Abamectina 1.8%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-014","registrationExpiry":{"$date":"2027-10-05T00:00:00Z"},"maxDose":{"$numberDecimal":"1.0"},"waitingPeriodDays":7,"manufacturer":"Syngenta","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Sulpomag","activeIngredient":"Sulfato de potasio y magnesio 22-11","category":"FERTILIZER","senasaRegistrationNumber":"SEN-2024-015","registrationExpiry":{"$date":"2029-07-31T00:00:00Z"},"maxDose":{"$numberDecimal":"8.0"},"waitingPeriodDays":0,"manufacturer":"K+S Minerals","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "agrochemicals", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V001-14" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="notificaciones" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de notificaciones â€” 15 documentos (distintos mÃ³dulos y estados).</comment>
+        <mongodb:insertMany collectionName="notificaciones">
+            <mongodb:documents><![CDATA[
+[
+{"tipo":"CREATE","modulo":"CLIENTE","mensaje":"Nuevo cliente registrado: Agroindustrias del Sur S.A.C.","usuario":"admin","entidadId":1,"detalle":"Cliente CLI-001 creado exitosamente","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"CREATE","modulo":"AGROQUIMICO","mensaje":"AgroquÃ­mico Roundup Max registrado en el sistema","usuario":"admin","entidadId":1,"detalle":"AgroquÃ­mico con registro SENASA SEN-2024-001","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"UPDATE","modulo":"PRODUCTO","mensaje":"Stock actualizado: Mandarina Satsuma","usuario":"logistica1","entidadId":1,"detalle":"Stock actualizado a 500 unidades","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"ALERT","modulo":"SENASA","mensaje":"Registro SENASA prÃ³ximo a vencer: Score 250 EC","usuario":"sistema","entidadId":3,"detalle":"El registro SEN-2024-003 vence el 2026-09-15. Renovar antes de esa fecha.","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"ALERT","modulo":"INVENTARIO","mensaje":"Stock mÃ­nimo alcanzado: Uva Red Globe","usuario":"sistema","entidadId":3,"detalle":"Stock actual (280 cajas) estÃ¡ cerca del mÃ­nimo definido (30 cajas).","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"CREATE","modulo":"APLICACION","mensaje":"Nueva aplicaciÃ³n de campo registrada en Parcela Norte Santa Rosa","usuario":"tech_juan","entidadId":1,"detalle":"AplicaciÃ³n de Confidor 350 SC a 0.40 L/ha en mandarina","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"CREATE","modulo":"PEDIDO","mensaje":"Nuevo pedido recibido de Fresh Fruits Export Ltd.","usuario":"admin","entidadId":2,"detalle":"Pedido PED-2026-001 por S/. 4,250.00 en estado CONFIRMADO","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"UPDATE","modulo":"CLIENTE","mensaje":"Datos actualizados: Supermercados Peruanos S.A.","usuario":"supervisor1","entidadId":3,"detalle":"Actualizado telÃ©fono y correo de contacto principal","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"ALERT","modulo":"SENASA","mensaje":"Dosis excedida detectada: Karate Zeon en Campo Principal Valle","usuario":"sistema","entidadId":2,"detalle":"La dosis aplicada (2.0 L/ha) supera el mÃ¡ximo SENASA (1.5 L/ha). Revisar.","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"CREATE","modulo":"PRODUCTOR","mensaje":"Nuevo productor registrado: JosÃ© Luis Quispe Mamani","usuario":"supervisor1","entidadId":3,"detalle":"Productor de LunahuanÃ¡ incorporado con QR-PROD-003","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"CREATE","modulo":"ENTREGA","mensaje":"Entrega de inventario completada para Roberto SÃ¡nchez","usuario":"logistica1","entidadId":1,"detalle":"10 L de Confidor 350 SC entregados en Fundo Santa Rosa","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"ALERT","modulo":"SENASA","mensaje":"Registro SENASA VENCIDO: Kocide 2000","usuario":"sistema","entidadId":11,"detalle":"El registro SEN-2024-011 venciÃ³ el 2026-06-30. No debe aplicarse.","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"UPDATE","modulo":"PEDIDO","mensaje":"Pedido PED-2026-001 actualizado a EN_PROCESO","usuario":"logistica1","entidadId":1,"detalle":"El pedido de Fresh Fruits Export estÃ¡ siendo preparado para despacho","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA"},
+{"tipo":"CREATE","modulo":"AGROQUIMICO","mensaje":"AgroquÃ­mico Sulpomag agregado al catÃ¡logo","usuario":"cert_ana","entidadId":15,"detalle":"Fertilizante potÃ¡sico registrado con nÃºmero SEN-2024-015","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"},
+{"tipo":"UPDATE","modulo":"LOTE","mensaje":"Lote LOT-2026-003 cerrado al finalizar campaÃ±a de espÃ¡rrago","usuario":"supervisor1","entidadId":3,"detalle":"CampaÃ±a espÃ¡rrago QuilmanÃ¡ finalizada. ProducciÃ³n total: 5,400 Kg.","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"LEIDA"}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "notificaciones", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

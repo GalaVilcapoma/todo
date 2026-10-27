@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  V002__add_aggregation_views.xml
+  Proyecto: AVSA CaÃ±ete â€” Equipo 08
+
+  TraducciÃ³n de mongodb/changes/V002__add_aggregation_views.js.
+  Crea dos vistas persistentes de agregaciÃ³n usando runCommand
+  con el comando create (viewOn + pipeline). El rollback las
+  elimina con dropCollection.
+  ============================================================
+-->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.33.xsd
+                        http://www.liquibase.org/xml/ns/mongodb
+                        https://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <changeSet id="V002-01" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="vw_productos_por_categoria"/></not>
+        </preConditions>
+        <comment>Vista vw_productos_por_categoria: resumen de productos agrupados por categorÃ­a.</comment>
+        <mongodb:runCommand>
+            <mongodb:command><![CDATA[{
+                "create": "vw_productos_por_categoria",
+                "viewOn": "productos",
+                "pipeline": [
+                    {
+                        "$group": {
+                            "_id": "$categoria",
+                            "totalProductos": {"$sum": 1},
+                            "precioPromedio": {"$avg": {"$toDouble": "$precioUnitario"}},
+                            "stockTotal": {"$sum": "$stockActual"}
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "categoria": "$_id",
+                            "totalProductos": 1,
+                            "precioPromedio": {"$round": ["$precioPromedio", 2]},
+                            "stockTotal": 1
+                        }
+                    },
+                    {"$sort": {"stockTotal": -1}}
+                ]
+            }]]></mongodb:command>
+        </mongodb:runCommand>
+        <rollback><mongodb:dropCollection collectionName="vw_productos_por_categoria"/></rollback>
+    </changeSet>
+
+    <changeSet id="V002-02" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="vw_ranking_fabricantes"/></not>
+        </preConditions>
+        <comment>Vista vw_ranking_fabricantes: ranking de fabricantes de agroquÃ­micos activos.</comment>
+        <mongodb:runCommand>
+            <mongodb:command><![CDATA[{
+                "create": "vw_ranking_fabricantes",
+                "viewOn": "agrochemicals",
+                "pipeline": [
+                    {"$match": {"active": true}},
+                    {
+                        "$group": {
+                            "_id": "$manufacturer",
+                            "totalProductos": {"$sum": 1},
+                            "categorias": {"$addToSet": "$category"},
+                            "diasEsperaPromedio": {"$avg": "$waitingPeriodDays"}
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "fabricante": "$_id",
+                            "totalProductos": 1,
+                            "categorias": 1,
+                            "diasEsperaPromedio": {"$round": ["$diasEsperaPromedio", 1]}
+                        }
+                    },
+                    {"$sort": {"totalProductos": -1}}
+                ]
+            }]]></mongodb:command>
+        </mongodb:runCommand>
+        <rollback><mongodb:dropCollection collectionName="vw_ranking_fabricantes"/></rollback>
+    </changeSet>
+
+</databaseChangeLog>

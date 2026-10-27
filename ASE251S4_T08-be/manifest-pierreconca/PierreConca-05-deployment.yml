@@ -1,0 +1,56 @@
+# ============================================================
+# Deployment — Despliegue del backend Spring Boot en Kubernetes
+# ============================================================
+# Crear:    kubectl apply -f PierreConca-05-deployment.yml
+# Eliminar: kubectl delete -f PierreConca-05-deployment.yml
+# Verificar: kubectl get deployments -n pierreconca-05-namespace
+# Pods:      kubectl get pods -n pierreconca-05-namespace
+# Logs:      kubectl logs -l app=pierreconca-05-deployment -n pierreconca-05-namespace
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pierreconca-05-deployment
+  namespace: pierreconca-05-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pierreconca-05-deployment    # Debe coincidir con las etiquetas del Service
+  template:
+    metadata:
+      labels:
+        app: pierreconca-05-deployment  # Debe coincidir con las etiquetas del Service
+    spec:
+      containers:
+        - name: pierreconca-05-container
+          image: concaflores/springboot-webflux-mongodb:latest   # Imagen en Docker Hub (generada por CI/CD)
+          imagePullPolicy: Always               # Always = siempre descarga la última versión
+          ports:
+            - containerPort: 8081 #cambiar a futuro
+          envFrom:
+            - secretRef:
+                name: pierreconca-05-secret     # Carga MONGODB_URI, MONGODB_DATABASE, SERVER_PORT
+          # Health checks usando Spring Actuator (ya configurado en application.yaml)
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

@@ -1,0 +1,18 @@
+# ============================================================
+# Namespace — Apache Kafka (Event Streaming)
+# ============================================================
+# Kafka se despliega en su propio namespace para aislarlo.
+# Tanto el Backend S4-BE como el BA consumen/producen eventos aquí.
+#
+# Aplicar:   kubectl apply -f PierreConca-kafka-namespace.yml
+# Verificar: kubectl get namespaces | grep kafka
+# ============================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pierreconca-kafka-namespace
+  labels:
+    project: avsa
+    component: messaging
+    owner: pierreconca

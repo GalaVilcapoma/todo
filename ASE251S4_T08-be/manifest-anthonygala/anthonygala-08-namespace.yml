@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: anthonygala-08
+  labels:
+    name: anthonygala-08
+    environment: development

@@ -1,0 +1,13 @@
+id,code,businessName,ruc,documentType,documentNumber,country,city,address,phone,email,primaryContact,customerType,state,active
+,CLI-001,Agroindustrias Valle Verde SAC,20123456789,RUC,20123456789,Peru,Ica,Av. Los Vinedos 123,956123456,agrovalleverde@example.com,Ing. Carlos Ramirez,Empresa,A,true
+,CLI-002,Frutos del Sol EIRL,20567890123,RUC,20567890123,Peru,Lima,Jr. Los Olivos 456,987654321,frutosdelsol@example.com,Sra. Lucia Torres,Empresa,A,true
+,CLI-003,Juan Perez Gomez,45678901,DNI,45678901,Peru,Arequipa,Calle El Mirador 789,999888777,juan.perez@example.com,Juan Perez Gomez,Natural,A,true
+,CLI-004,Agroexport Norte SAC,20601234567,RUC,20601234567,Peru,Trujillo,Av. Industrial 321,944555666,agroexport@example.com,Ing. Pedro Salas,Empresa,A,true
+,CLI-005,Vivero Los Andes,10456789012,DNI,10456789012,Peru,Cusco,Av. La Cultura 654,933222111,viveroandes@example.com,Ana Quispe,Natural,A,true
+,CLI-006,Campo Verde SRL,20701234567,RUC,20701234567,Peru,Piura,Av. Sanchez Cerro 987,911222333,campoverde@example.com,Luis Flores,Empresa,A,true
+,CLI-007,Distribuidora Agricola Sur,20802345678,RUC,20802345678,Peru,Arequipa,Av. Aviacion 159,955444888,agrisur@example.com,Rosa Mamani,Empresa,A,true
+,CLI-008,Agricola Santa Rosa,20903456789,RUC,20903456789,Peru,Chiclayo,Carretera Pimentel Km 5,966777555,santarosa@example.com,Jorge Diaz,Empresa,A,true
+,CLI-009,Fundo El Mirador,10123456789,DNI,10123456789,Peru,Huaral,Calle Comercio 258,988111222,fundo@example.com,Maria Rojas,Natural,A,true
+,CLI-010,Agropecuaria El Sol,20112233445,RUC,20112233445,Peru,Ica,Panamericana Sur Km 300,922333444,agroelsol@example.com,Carlos Nunez,Empresa,A,true
+,CLI-011,Insumos Agricolas Lima,20223344556,RUC,20223344556,Peru,Lima,Av. Grau 741,933444555,insumoslima@example.com,Elena Castro,Empresa,A,true
+,CLI-012,Cooperativa Agraria Norte,20334455667,RUC,20334455667,Peru,Piura,Av. Grau 852,944555666,coopnorte@example.com,Miguel Zapata,Cooperativa,A,true

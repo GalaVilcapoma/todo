@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+.env
+__pycache__
+*.pyc
+.pytest_cache
+Backend-Analitico-API.postman_collection.json
+CHECKLIST.md
+EJEMPLOS-RESPUESTAS.json
+ENTREGA-FINAL.md
+INSTRUCCIONES-RAPIDAS.md
+README.md
+manifest-pierreconca
+test_endpoints.py

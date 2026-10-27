@@ -1,0 +1,13 @@
+id,commercialName,activeIngredient,category,senasaRegistrationNumber,registrationExpiry,maxDose,waitingPeriodDays,manufacturer,active
+,Roundup Max,Glifosato 74.7%,HERBICIDE,SEN-2024-001,2026-12-31,2.5,15,Bayer CropScience,true
+,Karate Zeon,Lambda-Cialotrina 5%,INSECTICIDE,SEN-2024-002,2027-06-30,1.5,21,Syngenta,true
+,Score 250 EC,Difenoconazol 25%,FUNGICIDE,SEN-2024-003,2026-09-15,0.5,14,Syngenta,true
+,Mancozeb 80 WP,Mancozeb 80%,FUNGICIDE,SEN-2024-004,2027-03-31,2.0,14,UPL,true
+,Cipermetrina 20 EC,Cipermetrina 20%,INSECTICIDE,SEN-2024-005,2026-11-30,1.0,7,FMC,true
+,Glifosato 480,Glifosato 48%,HERBICIDE,SEN-2024-006,2027-01-31,3.0,15,Monsanto,true
+,Urea 46,Urea 46% N,FERTILIZER,SEN-2024-007,2028-06-30,50.0,0,Yara,true
+,Nitrato de Amonio,Nitrato de Amonio 33%,FERTILIZER,SEN-2024-008,2028-05-31,40.0,0,Haifa,true
+,Bio-Raiz Plus,Aminoacidos 20%,BIOSTIMULANT,SEN-2024-009,2027-08-31,5.0,0,Biotech,true
+,Abamectina 1.8 EC,Abamectina 1.8%,INSECTICIDE,SEN-2024-010,2026-10-31,0.75,10,Syngenta,true
+,Azufre Agricola,Azufre 80%,FUNGICIDE,SEN-2024-011,2027-12-31,3.5,0,Industrias,true
+,Correctivo Zinc,Zinc Quelatado 15%,OTHER,SEN-2024-012,2027-04-30,10.0,0,Disagro,true

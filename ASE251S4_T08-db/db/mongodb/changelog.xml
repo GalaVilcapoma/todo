@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  changelog.xml â€” Maestro de Liquibase para MongoDB
+  Proyecto: AVSA CaÃ±ete â€” Equipo 08 (ASE251S4_T08-db)
+
+  Usa la extensiÃ³n oficial liquibase-mongodb (Community) y sus
+  tipos de cambio: createCollection, createIndex, insertMany,
+  runCommand y dropCollection para el rollback.
+
+  Motor: MongoDB 7 (replica set de un nodo para soportar
+  transacciones ACID).
+  Base de datos destino: db_avsa
+  ============================================================
+-->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.33.xsd
+                        http://www.liquibase.org/xml/ns/mongodb
+                        https://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <include file="changes/V001__baseline.xml" relativeToChangelogFile="true"/>
+    <include file="changes/V002__add_aggregation_views.xml" relativeToChangelogFile="true"/>
+    <include file="changes/V003__embedding_and_referencing.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

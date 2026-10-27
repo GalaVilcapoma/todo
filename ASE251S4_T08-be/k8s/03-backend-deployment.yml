@@ -1,0 +1,50 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avsa-backend-19
+  namespace: alexandraquispe-19
+  labels:
+    app: avsa-backend-19
+    component: backend-springboot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: avsa-backend-19
+  template:
+    metadata:
+      labels:
+        app: avsa-backend-19
+        component: backend-springboot
+    spec:
+      nodeSelector:
+        node-role: backend-springboot
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: avsa-role
+                    operator: In
+                    values:
+                      - backend
+                      - backend-springboot
+      containers:
+        - name: avsa-backend
+          image: alexandraquispe/avsa-backend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+              name: http
+          envFrom:
+            - configMapRef:
+                name: avsa-backend-configmap
+            - secretRef:
+                name: avsa-backend-secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"

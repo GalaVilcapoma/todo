@@ -1,0 +1,13 @@
+id,code,name,category,description,unitMeasure,unitPrice,currentStock,minimumStock,origin,active
+,PROD-001,Fertilizante Folia-X,Fertilizantes,Fertilizante liquido concentrado para frutos,Litros,45.50,100,10,Nacional,true
+,PROD-002,Fungicida Cupro-Z,Fungicidas,Fungicida cuprico sistemico preventivo,Kilogramos,78.00,50,5,Importado,true
+,PROD-003,Bio-Estimulante Raiz-Plus,Bioestimulantes,Enraizante organico rico en aminoacidos,Litros,120.00,30,5,Nacional,true
+,PROD-004,Insecticida Agro-Kill,Insecticidas,Insecticida de contacto de amplio espectro,Litros,65.00,80,10,Importado,true
+,PROD-005,Herbicida Total-90,Herbicidas,Herbicida no selectivo de accion sistemica,Litros,52.00,60,8,Nacional,true
+,PROD-006,Nutriente NPK 20-20-20,Fertilizantes,Fertilizante soluble de alta pureza,Kilogramos,95.00,45,10,Importado,true
+,PROD-007,Acondicionador Suelo-Pro,Enmiendas,Mejorador de estructura del suelo,Kilogramos,38.00,70,12,Nacional,true
+,PROD-008,Bio-Fungicida Natural,Fungicidas,Fungicida biologico a base de trichoderma,Litros,88.00,25,5,Nacional,true
+,PROD-009,Adherente Silicona,Adherentes,Adherente y penetrante para pulverizaciones,Litros,28.00,120,20,Importado,true
+,PROD-010,Fertilizante Foliar Zinc,Fertilizantes,Corrector de deficiencia de zinc,Litros,42.00,90,15,Nacional,true
+,PROD-011,Insecticida Bio-Neem,Insecticidas,Insecticida organico de origen vegetal,Litros,58.00,40,8,Nacional,true
+,PROD-012,Regulador Crecimiento-Pro,Bioestimulantes,Regulador hormonal de crecimiento,Kilogramos,110.00,35,6,Importado,true

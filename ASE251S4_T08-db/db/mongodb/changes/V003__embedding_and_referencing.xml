@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  V003__embedding_and_referencing.xml
+  Proyecto: AVSA CaÃ±ete â€” Equipo 08
+
+  TraducciÃ³n de mongodb/changes/V003__embedding_and_referencing.js.
+  Demuestra las dos estrategias de modelado en MongoDB:
+
+    EMBEDDING   â†’ productos_v2, customer_v2, notificaciones_v2
+    REFERENCING â†’ fabricantes, agrochemicals_v2, pedidos_detalle,
+                  audit_logs_v2
+  ============================================================
+-->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mongodb="http://www.liquibase.org/xml/ns/mongodb"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.33.xsd
+                        http://www.liquibase.org/xml/ns/mongodb
+                        https://www.liquibase.org/xml/ns/mongodb/liquibase-mongodb-latest.xsd">
+
+    <!-- ============================================================
+         EMBEDDING â€” colecciones y validadores
+         ============================================================ -->
+
+    <changeSet id="V003-01" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="productos_v2"/></not>
+        </preConditions>
+        <comment>EMBEDDING: productos_v2 con subdocumento de atributos variables.</comment>
+        <mongodb:createCollection collectionName="productos_v2">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["codigo", "nombre", "categoria", "precioUnitario", "atributos"],
+                    "properties": {
+                        "codigo":         {"bsonType": "string"},
+                        "nombre":         {"bsonType": "string"},
+                        "categoria":      {"bsonType": "string"},
+                        "precioUnitario": {"bsonType": ["decimal", "double", "int"]},
+                        "atributos":      {"bsonType": "object"},
+                        "estado":         {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="productos_v2"/></rollback>
+    </changeSet>
+
+    <changeSet id="V003-02" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="customer_v2"/></not>
+        </preConditions>
+        <comment>EMBEDDING: customer_v2 con contactos y direcciones embebidos.</comment>
+        <mongodb:createCollection collectionName="customer_v2">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["codigo", "razonSocial", "pais", "tipoCliente"],
+                    "properties": {
+                        "codigo":      {"bsonType": "string"},
+                        "razonSocial": {"bsonType": "string"},
+                        "pais":        {"bsonType": "string"},
+                        "tipoCliente": {"bsonType": "string", "enum": ["NACIONAL", "INTERNACIONAL"]},
+                        "contactos":   {"bsonType": "array"},
+                        "direccionesEntrega": {"bsonType": "array"},
+                        "active":      {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="customer_v2"/></rollback>
+    </changeSet>
+
+    <changeSet id="V003-03" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="notificaciones_v2"/></not>
+        </preConditions>
+        <comment>EMBEDDING: notificaciones_v2 con snapshot inmutable del evento.</comment>
+        <mongodb:createCollection collectionName="notificaciones_v2"/>
+        <rollback><mongodb:dropCollection collectionName="notificaciones_v2"/></rollback>
+    </changeSet>
+
+    <!-- ============================================================
+         REFERENCING â€” colecciones y validadores
+         ============================================================ -->
+
+    <changeSet id="V003-04" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="fabricantes"/></not>
+        </preConditions>
+        <comment>REFERENCING: colecciÃ³n maestra fabricantes.</comment>
+        <mongodb:createCollection collectionName="fabricantes">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["codigo", "nombre", "pais"],
+                    "properties": {
+                        "codigo": {"bsonType": "string"},
+                        "nombre": {"bsonType": "string"},
+                        "pais":   {"bsonType": "string"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="fabricantes"/></rollback>
+    </changeSet>
+
+    <changeSet id="V003-05" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="agrochemicals_v2"/></not>
+        </preConditions>
+        <comment>REFERENCING: agrochemicals_v2 con fabricanteCodigo.</comment>
+        <mongodb:createCollection collectionName="agrochemicals_v2">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["commercialName", "activeIngredient", "category", "fabricanteCodigo"],
+                    "properties": {
+                        "commercialName":   {"bsonType": "string"},
+                        "activeIngredient": {"bsonType": "string"},
+                        "category":         {"bsonType": "string"},
+                        "fabricanteCodigo": {"bsonType": "string"},
+                        "active":           {"bsonType": "bool"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="agrochemicals_v2"/></rollback>
+    </changeSet>
+
+    <changeSet id="V003-06" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="pedidos_detalle"/></not>
+        </preConditions>
+        <comment>REFERENCING: pedidos_detalle con clienteCodigo.</comment>
+        <mongodb:createCollection collectionName="pedidos_detalle">
+            <mongodb:options><![CDATA[{
+                "validator": {"$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["numeroPedido", "clienteCodigo", "estado", "items"],
+                    "properties": {
+                        "numeroPedido":  {"bsonType": "string"},
+                        "clienteCodigo": {"bsonType": "string"},
+                        "estado": {
+                            "bsonType": "string",
+                            "enum": ["PENDIENTE", "CONFIRMADO", "EN_PROCESO", "DESPACHADO", "ENTREGADO", "CANCELADO"]
+                        },
+                        "items": {"bsonType": "array"}
+                    }
+                }},
+                "validationLevel": "moderate"
+            }]]></mongodb:options>
+        </mongodb:createCollection>
+        <rollback><mongodb:dropCollection collectionName="pedidos_detalle"/></rollback>
+    </changeSet>
+
+    <changeSet id="V003-07" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <not><mongodb:collectionExists collectionName="audit_logs_v2"/></not>
+        </preConditions>
+        <comment>REFERENCING: audit_logs_v2 con modulo + entidadId.</comment>
+        <mongodb:createCollection collectionName="audit_logs_v2"/>
+        <rollback><mongodb:dropCollection collectionName="audit_logs_v2"/></rollback>
+    </changeSet>
+
+    <!-- ============================================================
+         ÃNDICES
+         ============================================================ -->
+
+    <changeSet id="V003-08" author="avsa-t08">
+        <comment>Ãndices de las colecciones V003.</comment>
+        <mongodb:createIndex collectionName="productos_v2">
+            <mongodb:keys>{"codigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_productos_v2_codigo", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="customer_v2">
+            <mongodb:keys>{"codigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_customer_v2_codigo", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="notificaciones_v2">
+            <mongodb:keys>{"snapshot.productorCodigo": 1, "fechaHora": -1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_notif_v2_productor_fecha"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="fabricantes">
+            <mongodb:keys>{"codigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_fabricantes_codigo", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="agrochemicals_v2">
+            <mongodb:keys>{"fabricanteCodigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_agro_v2_fabricante"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="pedidos_detalle">
+            <mongodb:keys>{"numeroPedido": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_pedidos_numero", "unique": true}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="pedidos_detalle">
+            <mongodb:keys>{"clienteCodigo": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_pedidos_cliente"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="audit_logs_v2">
+            <mongodb:keys>{"modulo": 1, "entidadId": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_audit_v2_modulo_entidad"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="audit_logs_v2">
+            <mongodb:keys>{"timestamp": -1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_audit_v2_timestamp"}</mongodb:options>
+        </mongodb:createIndex>
+        <mongodb:createIndex collectionName="audit_logs_v2">
+            <mongodb:keys>{"userName": 1}</mongodb:keys>
+            <mongodb:options>{"name": "idx_audit_v2_user"}</mongodb:options>
+        </mongodb:createIndex>
+        <rollback>
+            <mongodb:dropIndex collectionName="productos_v2"><mongodb:keys>{"codigo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="customer_v2"><mongodb:keys>{"codigo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="notificaciones_v2"><mongodb:keys>{"snapshot.productorCodigo": 1, "fechaHora": -1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="fabricantes"><mongodb:keys>{"codigo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="agrochemicals_v2"><mongodb:keys>{"fabricanteCodigo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="pedidos_detalle"><mongodb:keys>{"numeroPedido": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="pedidos_detalle"><mongodb:keys>{"clienteCodigo": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="audit_logs_v2"><mongodb:keys>{"modulo": 1, "entidadId": 1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="audit_logs_v2"><mongodb:keys>{"timestamp": -1}</mongodb:keys></mongodb:dropIndex>
+            <mongodb:dropIndex collectionName="audit_logs_v2"><mongodb:keys>{"userName": 1}</mongodb:keys></mongodb:dropIndex>
+        </rollback>
+    </changeSet>
+
+    <!-- ============================================================
+         DATOS SEMILLA
+         ============================================================ -->
+
+    <changeSet id="V003-09" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="productos_v2" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de productos_v2 (atributos embebidos).</comment>
+        <mongodb:insertMany collectionName="productos_v2">
+            <mongodb:documents><![CDATA[
+[
+{"codigo":"PV2-001","nombre":"Mandarina Satsuma Premium","categoria":"CÃ­tricos","precioUnitario":{"$numberDecimal":"92.00"},"stockActual":480,"unidadMedida":"Caja","origen":"CaÃ±ete - San Vicente","atributos":{"calibre":"58-67 mm","gradosBrix":12.5,"colorPiel":"Naranja intenso","sinSemillas":true,"certificacionOrganica":false},"estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PV2-002","nombre":"Palta Hass Export","categoria":"Frutas","precioUnitario":{"$numberDecimal":"135.00"},"stockActual":320,"unidadMedida":"Caja","origen":"CaÃ±ete - LunahuanÃ¡","atributos":{"calibre":"16-20","contenidoGrasa":23.4,"madurez":"PreclimatÃ©rica","destinoExport":true,"certificaciones":["GlobalGAP","HACCP"]},"estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"PV2-003","nombre":"MaÃ­z Morado Seco","categoria":"Granos","precioUnitario":{"$numberDecimal":"58.00"},"stockActual":900,"unidadMedida":"Saco","origen":"CaÃ±ete - QuilmanÃ¡","atributos":{"humedad":14.0,"variedadLocal":"Carazas","usoIndustrial":"Colorante natural y chicha morada","granosPartidos":2.1},"estado":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "productos_v2", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-10" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="customer_v2" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de customer_v2 (contactos y direcciones embebidos).</comment>
+        <mongodb:insertMany collectionName="customer_v2">
+            <mongodb:documents><![CDATA[
+[
+{"codigo":"CLI-001","razonSocial":"Agroindustrias del Sur S.A.C.","ruc":"20512345678","pais":"PerÃº","tipoCliente":"NACIONAL","contactos":[{"nombre":"Luis Paredes","cargo":"Gerente Compras","telefono":"01-4567890","email":"lparedes@agroindsur.pe","principal":true},{"nombre":"Ana Torres","cargo":"Asistente LogÃ­stica","telefono":"01-4567891","email":"atorres@agroindsur.pe","principal":false}],"direccionesEntrega":[{"alias":"AlmacÃ©n Central","direccion":"Av. La Marina 1234, Lima","distrito":"San Miguel","referencia":"Frente al parque","predeterminada":true},{"alias":"Planta Procesadora","direccion":"Km 18 Panamericana Sur","distrito":"LurÃ­n","referencia":"Zona industrial","predeterminada":false}],"active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"codigo":"CLI-002","razonSocial":"Fresh Fruits Export Ltd.","pais":"Estados Unidos","tipoCliente":"INTERNACIONAL","contactos":[{"nombre":"John Smith","cargo":"Import Manager","telefono":"+1-305-1234567","email":"jsmith@freshfruits.com","principal":true}],"direccionesEntrega":[{"alias":"Miami Warehouse","direccion":"1200 Brickell Ave, Miami FL 33131","distrito":"Brickell","referencia":"Dock B","predeterminada":true}],"active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "customer_v2", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-11" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="notificaciones_v2" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de notificaciones_v2 (snapshot embebido inmutable).</comment>
+        <mongodb:insertMany collectionName="notificaciones_v2">
+            <mongodb:documents><![CDATA[
+[
+{"tipo":"APLICACION_CAMPO","mensaje":"AplicaciÃ³n de Confidor 350 SC registrada en Parcela Norte","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA","snapshot":{"productorCodigo":"PROD-001","productorNombre":"Roberto SÃ¡nchez HuamÃ¡n","campoCodigo":"CAMPO-001","campoNombre":"Fundo Santa Rosa - Parcela Norte","campoUbicacion":"San Vicente, CaÃ±ete","agroquimicoCodigo":"SEN-2024-006","agroquimicoNombre":"Confidor 350 SC","dosisAplicada":0.40,"unidadDosis":"L/ha","cultivo":"Mandarina Satsuma"}},
+{"tipo":"ALERTA_SENASA","mensaje":"Dosis excedida: Karate Zeon en Campo Principal Valle","fechaHora":{"$date":"2026-10-15T00:00:00Z"},"estado":"NO_LEIDA","snapshot":{"productorCodigo":"PROD-002","productorNombre":"JosÃ© Luis Quispe Mamani","campoCodigo":"CAMPO-003","campoNombre":"Campo Principal Valle","campoUbicacion":"LunahuanÃ¡, CaÃ±ete","agroquimicoCodigo":"SEN-2024-002","agroquimicoNombre":"Karate Zeon","dosisAplicada":2.0,"dosisMaxima":1.5,"unidadDosis":"L/ha","cultivo":"Uva Red Globe","alerta":"DOSIS_EXCEDIDA"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "notificaciones_v2", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-12" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="fabricantes" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de fabricantes (maestro referenciado).</comment>
+        <mongodb:insertMany collectionName="fabricantes">
+            <mongodb:documents><![CDATA[
+[
+{"codigo":"FAB-001","nombre":"Syngenta","pais":"Suiza","telefono":"+41-61-3231111","email":"contact@syngenta.com","active":true},
+{"codigo":"FAB-002","nombre":"Bayer CropScience","pais":"Alemania","telefono":"+49-214-301","email":"info@bayer.com","active":true},
+{"codigo":"FAB-003","nombre":"BASF","pais":"Alemania","telefono":"+49-621-600","email":"info@basf.com","active":true},
+{"codigo":"FAB-004","nombre":"FMC Corporation","pais":"Estados Unidos","telefono":"+1-215-2996000","email":"info@fmc.com","active":true},
+{"codigo":"FAB-005","nombre":"BioAgro Peru","pais":"PerÃº","telefono":"01-4456789","email":"ventas@bioagro.pe","active":true}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "fabricantes", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-13" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="agrochemicals_v2" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de agrochemicals_v2 (referencia a fabricante).</comment>
+        <mongodb:insertMany collectionName="agrochemicals_v2">
+            <mongodb:documents><![CDATA[
+[
+{"commercialName":"Karate Zeon","activeIngredient":"Lambda-Cialotrina 5%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-002","registrationExpiry":{"$date":"2027-06-30T00:00:00Z"},"maxDose":{"$numberDecimal":"1.5"},"waitingPeriodDays":21,"fabricanteCodigo":"FAB-001","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Amistar Top","activeIngredient":"Azoxystrobin 20% + Difenoconazol 12.5%","category":"FUNGICIDE","senasaRegistrationNumber":"SEN-2024-007","registrationExpiry":{"$date":"2028-02-28T00:00:00Z"},"maxDose":{"$numberDecimal":"1.0"},"waitingPeriodDays":21,"fabricanteCodigo":"FAB-001","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Confidor 350 SC","activeIngredient":"Imidacloprid 35%","category":"INSECTICIDE","senasaRegistrationNumber":"SEN-2024-006","registrationExpiry":{"$date":"2027-03-20T00:00:00Z"},"maxDose":{"$numberDecimal":"0.8"},"waitingPeriodDays":14,"fabricanteCodigo":"FAB-002","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"commercialName":"Stomp Aqua","activeIngredient":"Pendimetalina 45.5%","category":"HERBICIDE","senasaRegistrationNumber":"SEN-2024-013","registrationExpiry":{"$date":"2027-01-20T00:00:00Z"},"maxDose":{"$numberDecimal":"3.5"},"waitingPeriodDays":45,"fabricanteCodigo":"FAB-003","active":true,"createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "agrochemicals_v2", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-14" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="pedidos_detalle" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de pedidos_detalle (referencia a cliente).</comment>
+        <mongodb:insertMany collectionName="pedidos_detalle">
+            <mongodb:documents><![CDATA[
+[
+{"numeroPedido":"PED-2026-001","clienteCodigo":"CLI-002","fechaPedido":{"$date":"2026-10-01T00:00:00Z"},"estado":"EN_PROCESO","items":[{"productoCodigo":"PROD-002","nombre":"Palta Hass","cantidad":50,"precioUnitario":{"$numberDecimal":"120.00"},"subtotal":{"$numberDecimal":"6000.00"}},{"productoCodigo":"PROD-004","nombre":"EspÃ¡rrago Verde","cantidad":100,"precioUnitario":{"$numberDecimal":"18.50"},"subtotal":{"$numberDecimal":"1850.00"}}],"totalPedido":{"$numberDecimal":"7850.00"},"moneda":"USD","observaciones":"Despacho FOB Callao","createdAt":{"$date":"2026-10-15T00:00:00Z"}},
+{"numeroPedido":"PED-2026-002","clienteCodigo":"CLI-001","fechaPedido":{"$date":"2026-10-05T00:00:00Z"},"estado":"CONFIRMADO","items":[{"productoCodigo":"PROD-001","nombre":"Mandarina Satsuma","cantidad":200,"precioUnitario":{"$numberDecimal":"85.00"},"subtotal":{"$numberDecimal":"17000.00"}}],"totalPedido":{"$numberDecimal":"17000.00"},"moneda":"PEN","observaciones":"Entrega en almacÃ©n San Miguel","createdAt":{"$date":"2026-10-15T00:00:00Z"}}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "pedidos_detalle", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="V003-15" author="avsa-t08">
+        <preConditions onFail="MARK_RAN">
+            <mongodb:expectedDocumentCount collectionName="audit_logs_v2" expectedCount="0"/>
+        </preConditions>
+        <comment>Semilla de audit_logs_v2 (referencia a entidad genÃ©rica).</comment>
+        <mongodb:insertMany collectionName="audit_logs_v2">
+            <mongodb:documents><![CDATA[
+[
+{"accion":"CREATE","modulo":"CUSTOMER","entidadId":"CLI-001","userName":"admin","timestamp":{"$date":"2026-10-15T00:00:00Z"},"detalle":"Cliente creado: Agroindustrias del Sur S.A.C.","ip":"192.168.1.100"},
+{"accion":"UPDATE","modulo":"PRODUCTO","entidadId":"PROD-001","userName":"logistica1","timestamp":{"$date":"2026-10-15T00:00:00Z"},"detalle":"Stock actualizado de 450 a 500","ip":"192.168.1.105"},
+{"accion":"CREATE","modulo":"PEDIDO","entidadId":"PED-2026-001","userName":"admin","timestamp":{"$date":"2026-10-15T00:00:00Z"},"detalle":"Pedido creado para Fresh Fruits Export Ltd. por USD 7,850.00","ip":"192.168.1.100"},
+{"accion":"UPDATE","modulo":"AGROCHEMICAL","entidadId":"SEN-2024-003","userName":"cert_ana","timestamp":{"$date":"2026-10-15T00:00:00Z"},"detalle":"Registro SENASA renovado hasta 2028-09-15","ip":"192.168.1.112"}
+]
+            ]]></mongodb:documents>
+        </mongodb:insertMany>
+        <rollback>
+            <mongodb:runCommand><mongodb:command><![CDATA[{"delete": "audit_logs_v2", "deletes": [{"q": {}, "limit": 0}]}]]></mongodb:command></mongodb:runCommand>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

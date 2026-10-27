@@ -1,0 +1,2 @@
+@SuppressWarnings({"null", "unused"})
+package pe.edu.vallegrande.app.config;

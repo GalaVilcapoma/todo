@@ -1,0 +1,114 @@
+name: avsa-canyete-t08
+
+# =============================================================
+# compose.yaml — Entorno de base de datos con Liquibase
+# Proyecto: AVSA Cañete — Equipo 08
+#
+# Levanta los dos motores y aplica los changelogs con Liquibase:
+#   - sqlserver          → motor SQL Server 2022
+#   - sqlserver-init     → crea la base de datos avsa_db (una vez)
+#   - mongodb            → motor MongoDB 7 como replica set (rs0)
+#   - mongodb-init       → inicializa el replica set (una vez)
+#   - liquibase-sqlserver→ aplica db/sqlserver/changelog.xml
+#   - liquibase-mongodb  → aplica db/mongodb/changelog.xml
+# =============================================================
+
+x-liquibase: &liquibase
+  image: ${IMAGE_NAMESPACE:-avsa-t08}/avsa-liquibase:${RELEASE_VERSION:-local}
+  build:
+    context: .
+    dockerfile: docker/liquibase/Dockerfile
+  volumes:
+    - ./db:/workspace/db:ro
+
+services:
+  # ── Motor SQL Server ─────────────────────────────────────────
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD en .env}
+      MSSQL_PID: ${MSSQL_PID:-Express}
+    ports:
+      - "${SQLSERVER_PORT:-1433}:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── Crea la base de datos avsa_db (idempotente, una sola vez) ─
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD en .env}
+      SQLSERVER_DATABASE: ${SQLSERVER_DATABASE:-avsa_db}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - >
+        /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P "$$MSSQL_SA_PASSWORD" -C -b
+        -Q "IF DB_ID('$$SQLSERVER_DATABASE') IS NULL BEGIN CREATE DATABASE [$$SQLSERVER_DATABASE]; END"
+        && echo "[SUCCESS] Base de datos $$SQLSERVER_DATABASE lista."
+    restart: "no"
+
+  # ── Liquibase sobre SQL Server ───────────────────────────────
+  liquibase-sqlserver:
+    <<: *liquibase
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    environment:
+      LIQUIBASE_COMMAND_URL: "jdbc:sqlserver://sqlserver:1433;databaseName=${SQLSERVER_DATABASE:-avsa_db};encrypt=false;trustServerCertificate=true"
+      LIQUIBASE_COMMAND_USERNAME: sa
+      LIQUIBASE_COMMAND_PASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD en .env}
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: db/sqlserver/changelog.xml
+    command: ["update"]
+    restart: "no"
+
+  # ── Motor MongoDB como replica set (requerido para ACID) ──────
+  # NOTA: en local se corre SIN autenticación (patrón estándar para
+  # desarrollo). Habilitar auth + replica set exige un keyfile; ver
+  # docs/mongodb-acid-transactions.md, sección "Producción".
+  mongodb:
+    image: mongo:7
+    command: ["--replSet", "${MONGODB_REPLICA_SET:-rs0}", "--bind_ip_all"]
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping')\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+
+  # ── Inicializa el replica set rs0 (una sola vez) ─────────────
+  mongodb-init:
+    image: mongo:7
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGODB_HOST: mongodb:27017
+      MONGODB_REPLICA_SET: ${MONGODB_REPLICA_SET:-rs0}
+    volumes:
+      - ./mongodb/replica:/replica:ro
+    entrypoint: ["/bin/bash", "/replica/init-replica.sh"]
+    restart: "no"
+
+  # ── Liquibase sobre MongoDB ──────────────────────────────────
+  liquibase-mongodb:
+    <<: *liquibase
+    depends_on:
+      mongodb-init:
+        condition: service_completed_successfully
+    environment:
+      LIQUIBASE_COMMAND_URL: "mongodb://mongodb:27017/${MONGODB_DATABASE:-db_avsa}?directConnection=true&serverSelectionTimeoutMS=10000"
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: db/mongodb/changelog.xml
+    command: ["update"]
+    restart: "no"

@@ -1,0 +1,19 @@
+{
+  "fieldName": "Campo Norte - Lote A",
+  "areaHectares": 15.5,
+  "applicationDate": "2026-09-25",
+  "responsible": "Juan Pérez García",
+  "temperatureCelsius": 25.5,
+  "humidityPercentage": 65.0,
+  "windConditions": "Viento leve de 5-10 km/h",
+  "remarks": "Aplicación preventiva contra plagas",
+  "details": [
+    {
+      "agrochemicalId": "REEMPLAZAR_CON_ID_REAL_DE_MONGO",
+      "appliedDose": 2.5,
+      "unitMeasure": "Litros/Ha",
+      "treatedAreaHectares": 15.5,
+      "remark": "Aplicar en horas de la mañana"
+    }
+  ]
+}

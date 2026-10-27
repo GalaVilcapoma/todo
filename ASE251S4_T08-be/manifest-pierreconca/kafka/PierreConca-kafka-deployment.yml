@@ -1,0 +1,64 @@
+# ============================================================
+# Deployment — Apache Kafka Broker
+# ============================================================
+# Imagen: confluentinc/cp-kafka:7.5.0 (Confluent Community - libre)
+# Puerto 9092: comunicación INTERNA dentro del cluster K8s
+# Puerto 9093: comunicación EXTERNA via NodePort 30092
+#
+# ⚠️  ANTES DE APLICAR: edita el ConfigMap y reemplaza
+#     <IP_PUBLICA_EC2> en KAFKA_ADVERTISED_LISTENERS
+#     con la IP pública real de tu instancia EC2.
+#
+# Aplicar:   kubectl apply -f PierreConca-kafka-deployment.yml
+# Pods:      kubectl get pods -n pierreconca-kafka-namespace
+# Logs:      kubectl logs -f -l app=pierreconca-kafka -n pierreconca-kafka-namespace
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pierreconca-kafka-deployment
+  namespace: pierreconca-kafka-namespace
+  labels:
+    app: pierreconca-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pierreconca-kafka
+  template:
+    metadata:
+      labels:
+        app: pierreconca-kafka
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:7.5.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9092
+              name: internal
+            - containerPort: 9093
+              name: external
+          envFrom:
+            - configMapRef:
+                name: pierreconca-kafka-configmap
+          livenessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"

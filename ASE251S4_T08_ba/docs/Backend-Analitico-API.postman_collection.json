@@ -1,0 +1,289 @@
+{
+  "info": {
+    "_postman_id": "ba-analytics-collection-2026",
+    "name": "Backend Analítico - API Completa",
+    "description": "Colección Postman con los 18 endpoints analíticos de ASE251S4_T08_ba. Los indicadores 12, 15, 17 y 18 requieren SQL Server además de MongoDB.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Productos e inventario",
+      "item": [
+        {
+          "name": "01. Resumen por categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/productos/resumen-categoria",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "productos", "resumen-categoria"]
+            },
+            "description": "Resumen de productos activos por categoría con stock, valor, precio promedio y productos con stock bajo."
+          },
+          "response": []
+        },
+        {
+          "name": "03. Alerta de reabastecimiento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/inventario/alerta-reabastecimiento",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "inventario", "alerta-reabastecimiento"]
+            },
+            "description": "Productos con stock igual o inferior al mínimo, déficit y costo estimado de reposición."
+          },
+          "response": []
+        },
+        {
+          "name": "12. Rotación de inventario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/inventario/rotacion",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "inventario", "rotacion"]
+            },
+            "description": "Rotación de los últimos 90 días. Requiere SQL Server para los movimientos de stock."
+          },
+          "response": []
+        },
+        {
+          "name": "13. Productos con mayor valor de stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/productos/mayor-valor-stock",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "productos", "mayor-valor-stock"]
+            },
+            "description": "Ranking de productos por valor de stock y participación sobre el total."
+          },
+          "response": []
+        },
+        {
+          "name": "14. Productos por origen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/productos/por-origen",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "productos", "por-origen"]
+            },
+            "description": "Distribución de productos, stock y valor por zona de origen."
+          },
+          "response": []
+        },
+        {
+          "name": "18. Movimientos de stock valorados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/inventario/movimientos-valorados",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "inventario", "movimientos-valorados"]
+            },
+            "description": "Entradas, salidas y balance valorado por producto. Requiere SQL Server."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agroquímicos",
+      "item": [
+        {
+          "name": "02. Ranking de fabricantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/ranking-fabricantes",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "ranking-fabricantes"]
+            },
+            "description": "Portafolio por fabricante, categorías, carencia promedio y dosis máxima promedio."
+          },
+          "response": []
+        },
+        {
+          "name": "07. Distribución por categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/por-categoria",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "por-categoria"]
+            },
+            "description": "Productos, dosis promedio y carencia promedio por categoría fitosanitaria."
+          },
+          "response": []
+        },
+        {
+          "name": "08. Vencimiento SENASA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/vencimiento-senasa",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "vencimiento-senasa"]
+            },
+            "description": "Registros SENASA próximos a vencer y estado de alerta."
+          },
+          "response": []
+        },
+        {
+          "name": "09. Ingredientes activos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/ingredientes-activos",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "ingredientes-activos"]
+            },
+            "description": "Ranking de ingredientes activos por formulaciones, categorías y fabricantes."
+          },
+          "response": []
+        },
+        {
+          "name": "10. Carencia por categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/carencia-por-categoria",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "carencia-por-categoria"]
+            },
+            "description": "Carencia mínima, máxima, promedio y rango por categoría."
+          },
+          "response": []
+        },
+        {
+          "name": "11. Dosificación por tipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/agroquimicos/dosificacion-por-tipo",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "agroquimicos", "dosificacion-por-tipo"]
+            },
+            "description": "Dosis mínima, máxima y promedio por categoría, con unidad de medida."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "04. KPIs de clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/clientes/kpis",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "clientes", "kpis"]
+            },
+            "description": "Total, activos, inactivos, países, tipos y tasa de actividad."
+          },
+          "response": []
+        },
+        {
+          "name": "05. Clientes por país",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/clientes/por-pais",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "clientes", "por-pais"]
+            },
+            "description": "Clientes activos agrupados por país."
+          },
+          "response": []
+        },
+        {
+          "name": "06. Clientes por tipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/clientes/por-tipo",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "clientes", "por-tipo"]
+            },
+            "description": "Segmentación de clientes activos por tipo comercial y porcentaje."
+          },
+          "response": []
+        },
+        {
+          "name": "15. Top clientes potenciales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/clientes/top-potencial",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "clientes", "top-potencial"]
+            },
+            "description": "Clientes con mayor potencial comercial. Requiere SQL Server."
+          },
+          "response": []
+        },
+        {
+          "name": "16. Clientes por ciudad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/clientes/por-ciudad",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "clientes", "por-ciudad"]
+            },
+            "description": "Clientes activos por ciudad y país con participación porcentual."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pedidos",
+      "item": [
+        {
+          "name": "17. Pedidos por cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/analytics/pedidos/por-cliente",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "analytics", "pedidos", "por-cliente"]
+            },
+            "description": "Pedidos, montos, ticket promedio, entregados, cancelados y tasa de cumplimiento. Requiere SQL Server."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}

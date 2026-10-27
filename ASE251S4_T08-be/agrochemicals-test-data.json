@@ -1,0 +1,57 @@
+[
+  {
+    "commercialName": "Roundup Max",
+    "activeIngredient": "Glifosato 74.7%",
+    "category": "HERBICIDE",
+    "senasaRegistrationNumber": "SEN-2024-001",
+    "registrationExpiry": "2026-12-31",
+    "maxDose": 2.5,
+    "waitingPeriodDays": 15,
+    "manufacturer": "Bayer CropScience",
+    "active": true
+  },
+  {
+    "commercialName": "Karate Zeon",
+    "activeIngredient": "Lambda-Cialotrina 5%",
+    "category": "INSECTICIDE",
+    "senasaRegistrationNumber": "SEN-2024-002",
+    "registrationExpiry": "2027-06-30",
+    "maxDose": 1.5,
+    "waitingPeriodDays": 21,
+    "manufacturer": "Syngenta",
+    "active": true
+  },
+  {
+    "commercialName": "Score 250 EC",
+    "activeIngredient": "Difenoconazol 25%",
+    "category": "FUNGICIDE",
+    "senasaRegistrationNumber": "SEN-2024-003",
+    "registrationExpiry": "2026-09-15",
+    "maxDose": 0.5,
+    "waitingPeriodDays": 14,
+    "manufacturer": "Syngenta",
+    "active": true
+  },
+  {
+    "commercialName": "Nitrofoska",
+    "activeIngredient": "NPK 12-12-17",
+    "category": "FERTILIZER",
+    "senasaRegistrationNumber": "SEN-2024-004",
+    "registrationExpiry": "2028-12-31",
+    "maxDose": 200.0,
+    "waitingPeriodDays": 0,
+    "manufacturer": "Yara",
+    "active": true
+  },
+  {
+    "commercialName": "Amino 16",
+    "activeIngredient": "Aminoácidos libres 16%",
+    "category": "BIOSTIMULANT",
+    "senasaRegistrationNumber": "SEN-2024-005",
+    "registrationExpiry": "2027-03-20",
+    "maxDose": 3.0,
+    "waitingPeriodDays": 0,
+    "manufacturer": "Bioiberica",
+    "active": true
+  }
+]

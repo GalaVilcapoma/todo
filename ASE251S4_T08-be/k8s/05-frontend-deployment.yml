@@ -1,0 +1,47 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avsa-frontend-19
+  namespace: alexandraquispe-19
+  labels:
+    app: avsa-frontend-19
+    component: frontend-react
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avsa-frontend-19
+  template:
+    metadata:
+      labels:
+        app: avsa-frontend-19
+        component: frontend-react
+    spec:
+      nodeSelector:
+        node-role: frontend
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: avsa-role
+                    operator: In
+                    values:
+                      - frontend
+      containers:
+        - name: avsa-frontend
+          image: alexandraquispe/avsa-frontend:1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: API_URL
+              value: "http://avsa-alexandra-backend-ec2:30019"
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"

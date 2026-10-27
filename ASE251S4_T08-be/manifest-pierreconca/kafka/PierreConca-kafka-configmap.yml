@@ -1,0 +1,47 @@
+# ============================================================
+# ConfigMap — Configuración de Zookeeper y Kafka
+# ============================================================
+# Kafka necesita Zookeeper para coordinar el cluster.
+# Ambos se configuran aquí con variables no sensibles.
+#
+# Aplicar:   kubectl apply -f PierreConca-kafka-configmap.yml
+# Verificar: kubectl describe configmap pierreconca-kafka-configmap -n pierreconca-kafka-namespace
+# ============================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pierreconca-kafka-configmap
+  namespace: pierreconca-kafka-namespace
+data:
+  # ── Zookeeper ─────────────────────────────────────────────────
+  ZOOKEEPER_CLIENT_PORT: "2181"
+  ZOOKEEPER_TICK_TIME: "2000"
+
+  # ── Kafka Broker ──────────────────────────────────────────────
+  KAFKA_BROKER_ID: "1"
+  KAFKA_ZOOKEEPER_CONNECT: "pierreconca-zookeeper-service.pierreconca-kafka-namespace.svc.cluster.local:2181"
+
+  # Listeners: PLAINTEXT para dentro del cluster, EXTERNAL para afuera (NodePort)
+  KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:9093"
+  KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://pierreconca-kafka-service.pierreconca-kafka-namespace.svc.cluster.local:9092,EXTERNAL://<IP_PUBLICA_EC2>:30092"
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
+  KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+
+  # Configuración de topics
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  KAFKA_NUM_PARTITIONS: "1"
+  KAFKA_DEFAULT_REPLICATION_FACTOR: "1"
+
+  # Retención de mensajes: 7 días
+  KAFKA_LOG_RETENTION_HOURS: "168"
+  KAFKA_LOG_SEGMENT_BYTES: "1073741824"
+
+  # Offset reset para consumers nuevos
+  KAFKA_AUTO_OFFSET_RESET: "earliest"
+
+  # Topics del proyecto AVSA
+  # avsa.transactions  → Backend S4-BE produce cuando hay nuevos registros/alquileres/pagos
+  # avsa.events        → Backend S4-BE produce logs de actividad
+  # avsa.analytics     → Backend BA consume para procesar analítica
+  KAFKA_TOPICS: "avsa.transactions,avsa.events,avsa.analytics"

@@ -1,0 +1,9 @@
+target/
+!target/*.jar
+.git
+.gitignore
+README.md
+GUIA_VIDEO.md
+*.md
+.env
+.mvn/wrapper/maven-wrapper.jar

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anthonygala-08-configmap
+  namespace: anthonygala-08
+data:
+  # Backend Spring Boot S4
+  SERVER_PORT: "8081"
+  SPRING_APPLICATION_NAME: "spring-webflux-nosql"
+  SPRINGDOC_API_DOCS_ENABLED: "true"
+  SPRINGDOC_API_DOCS_PATH: "/v3/api-docs"
+  SPRINGDOC_SWAGGER_UI_ENABLED: "true"
+  SPRINGDOC_SWAGGER_UI_PATH: "/swagger-ui.html"
+
+  # Backend Analitico FastAPI
+  PORT: "8000"
+  DATABASE_NAME: "db_avsa"
+  SQLSERVER_ENABLED: "true"

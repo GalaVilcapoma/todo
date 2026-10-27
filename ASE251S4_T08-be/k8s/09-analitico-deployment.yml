@@ -1,0 +1,50 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avsa-analitico-19
+  namespace: alexandraquispe-19
+  labels:
+    app: avsa-analitico-19
+    component: backend-analitico-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avsa-analitico-19
+  template:
+    metadata:
+      labels:
+        app: avsa-analitico-19
+        component: backend-analitico-python
+    spec:
+      nodeSelector:
+        node-role: backend-analitico
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: avsa-role
+                    operator: In
+                    values:
+                      - backend-analitico
+                      - analytics
+      containers:
+        - name: avsa-analitico
+          image: alexandraquispe/avsa-analytics:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: avsa-analitico-configmap
+            - secretRef:
+                name: avsa-analitico-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "150m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

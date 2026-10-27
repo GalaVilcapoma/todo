@@ -1,0 +1,26 @@
+# ============================================================
+# Service — Zookeeper (solo uso interno del cluster)
+# ============================================================
+# ClusterIP: solo accesible dentro del cluster K8s.
+# Kafka se conecta a este servicio para coordinación.
+#
+# Aplicar:   kubectl apply -f PierreConca-zookeeper-service.yml
+# Verificar: kubectl get services -n pierreconca-kafka-namespace
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pierreconca-zookeeper-service
+  namespace: pierreconca-kafka-namespace
+  labels:
+    app: pierreconca-zookeeper
+spec:
+  type: ClusterIP   # Solo uso interno, Zookeeper no se expone fuera del cluster
+  ports:
+    - port: 2181
+      targetPort: 2181
+      protocol: TCP
+      name: client
+  selector:
+    app: pierreconca-zookeeper

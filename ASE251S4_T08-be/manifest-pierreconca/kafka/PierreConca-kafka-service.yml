@@ -1,0 +1,34 @@
+# ============================================================
+# Service — Apache Kafka (interno + externo)
+# ============================================================
+# Puerto 9092 → ClusterIP interno (backends dentro del cluster)
+# Puerto 9093 → NodePort 30092 (acceso externo para debug/testing)
+#
+# Los backends se conectan a Kafka usando el hostname interno:
+#   pierreconca-kafka-service.pierreconca-kafka-namespace.svc.cluster.local:9092
+#
+# Aplicar:   kubectl apply -f PierreConca-kafka-service.yml
+# Verificar: kubectl get services -n pierreconca-kafka-namespace
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pierreconca-kafka-service
+  namespace: pierreconca-kafka-namespace
+  labels:
+    app: pierreconca-kafka
+spec:
+  type: NodePort
+  ports:
+    - port: 9092
+      targetPort: 9092
+      protocol: TCP
+      name: internal
+    - port: 9093
+      targetPort: 9093
+      nodePort: 30092      # Puerto externo para acceder a Kafka desde fuera del cluster
+      protocol: TCP
+      name: external
+  selector:
+    app: pierreconca-kafka
